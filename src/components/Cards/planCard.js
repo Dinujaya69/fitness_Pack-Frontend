@@ -29,7 +29,7 @@ const PlanCard = ({ option }) => {
         "/api/payment/create-checkout-session",
         {
           plan: [option],
-          logeduserid: user._id,
+          loggedUserId: user._id,
         }
       );
 

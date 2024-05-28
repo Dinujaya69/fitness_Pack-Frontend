@@ -9,7 +9,9 @@ const Plan = () => {
   useEffect(() => {
     const fetchPlanOptions = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/plan/plans");
+        const response = await axios.get(
+          "http://localhost:5000/api/plan/plans"
+        );
         setPlanOptions(response.data);
       } catch (error) {
         console.error("Error fetching plan options:", error);

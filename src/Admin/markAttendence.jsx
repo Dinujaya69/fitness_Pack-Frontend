@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 import Button from "@mui/material/Button";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 
 const AttendanceManagement = () => {
   const [users, setUsers] = useState([]);
@@ -16,33 +21,33 @@ const AttendanceManagement = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [attendanceToDelete, setAttendanceToDelete] = useState(null);
 
-useEffect(() => {
-  // Fetch users with role 'member'
-  const fetchUsers = async () => {
-    try {
-      const response = await axios.get("/api/user/users", {
-        params: {
-          role: "member",
-        },
-      });
-      setUsers(response.data);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
-  // Fetch all attendances
-  const fetchAttendances = async () => {
-    try {
-      const response = await axios.get("/api/attendance/");
-      setAttendances(response.data);
-    } catch (error) {
-      console.error("Error fetching attendances:", error);
-    }
-  };
+  useEffect(() => {
+    // Fetch users with role 'member'
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get("/api/user/users", {
+          params: {
+            role: "member",
+          },
+        });
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    // Fetch all attendances
+    const fetchAttendances = async () => {
+      try {
+        const response = await axios.get("/api/attendance/");
+        setAttendances(response.data);
+      } catch (error) {
+        console.error("Error fetching attendances:", error);
+      }
+    };
 
-  fetchUsers();
-  fetchAttendances();
-}, []);
+    fetchUsers();
+    fetchAttendances();
+  }, []);
 
   const handleUserChange = (e) => {
     const userId = e.target.value;
@@ -58,13 +63,15 @@ useEffect(() => {
     }
 
     // Check if attendance has already been marked for the current day
-    // const today = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
-    // const hasMarkedAttendanceToday = attendances.some(attendance => attendance.date.split('T')[0] === today);
+    const today = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
+    const hasMarkedAttendanceToday = attendances.some(
+      (attendance) => attendance.date.split("T")[0] === today
+    );
 
-    // if (hasMarkedAttendanceToday) {
-    //   toast.warn("You have already marked attendance for today");
-    //   return;
-    // }
+    if (hasMarkedAttendanceToday) {
+      toast.warn("You have already marked attendance for today");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -182,13 +189,18 @@ useEffect(() => {
             <tbody>
               {attendances.map((attendance) => (
                 <tr key={attendance._id}>
-                    
-                  <td className="px-6 py-4">{attendance.userId.name}</td>
+                  <td className="px-6 py-4">
+                    {attendance.userId?.name || "Unknown"}
+                  </td>
                   <td className="px-6 py-4">
                     {new Date(attendance.date).toLocaleString()}
                   </td>
-                  <td className="px-6 py-4">{attendance.userId.gender}</td>
-                  <td className="px-6 py-4">{attendance.userId.age}</td>
+                  <td className="px-6 py-4">
+                    {attendance.userId?.gender || "Unknown"}
+                  </td>
+                  <td className="px-6 py-4">
+                    {attendance.userId?.age || "Unknown"}
+                  </td>
                   <td className="px-6 py-4">
                     <Button
                       onClick={() => handleDeleteClick(attendance)}
@@ -251,9 +263,3 @@ useEffect(() => {
 };
 
 export default AttendanceManagement;
-
-
-
-
- 
- 

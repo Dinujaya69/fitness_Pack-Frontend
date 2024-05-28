@@ -16,6 +16,7 @@ const PlanMain = () => {
     id: "",
     title: "",
     price: "",
+    planImage: "",
     description: [],
   });
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,6 +49,7 @@ const PlanMain = () => {
       id: plan._id,
       title: plan.title,
       price: plan.price,
+      planImage: plan.planImage,
       description: plan.description,
     });
     setOpenEditModal(true);
@@ -59,6 +61,7 @@ const PlanMain = () => {
       id: "",
       title: "",
       price: "",
+      planImage: "",
       description: [],
     });
   };
