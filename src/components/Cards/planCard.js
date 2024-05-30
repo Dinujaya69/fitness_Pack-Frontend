@@ -8,6 +8,7 @@ import {
   Typography,
   Box,
   Button,
+  CardMedia,
 } from "@mui/material";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
@@ -17,13 +18,12 @@ const stripePromise = loadStripe(
   "pk_test_51PJx5nSCawkqcSvpFkfC9PpaKhtVCOzjfa52KxXs42psyGGq0IHyMy44VcZ6XWa8qXq1zl9TSf5tzbDiK0raDMac00001mp6DP"
 );
 
-const PlanCard = ({ option }) => {
+const PlanCard = ({ option, onDelete }) => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleCheckout = async () => {
     const stripe = await stripePromise;
-
     try {
       const { data } = await axios.post(
         "/api/payment/create-checkout-session",
@@ -32,11 +32,7 @@ const PlanCard = ({ option }) => {
           loggedUserId: user._id,
         }
       );
-
-      const result = await stripe.redirectToCheckout({
-        sessionId: data.id,
-      });
-
+      const result = await stripe.redirectToCheckout({ sessionId: data.id });
       if (result.error) {
         console.error(result.error.message);
       }
@@ -53,9 +49,26 @@ const PlanCard = ({ option }) => {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/api/plan/delete/${option._id}`);
+      onDelete(option._id);
+    } catch (error) {
+      console.error("Error deleting plan:", error);
+    }
+  };
+
   return (
     <Box className="w-full sm:w-1/2 lg:w-1/3 p-3">
       <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        {option.planImage && (
+          <CardMedia
+            component="img"
+            height="140"
+            image={`/${option.planImage}`}
+            alt={option.title}
+          />
+        )}
         <CardContent sx={{ flex: 1 }}>
           <Typography variant="h5" component="div">
             {option.title}
@@ -94,6 +107,17 @@ const PlanCard = ({ option }) => {
           >
             {user ? "Buy Now" : "Join with Us"}
           </Button>
+          {user && user.role === "admin" && (
+            <Button
+              size="large"
+              variant="contained"
+              color="secondary"
+              className="w-full mt-2"
+              onClick={handleDelete}
+            >
+              Delete Plan
+            </Button>
+          )}
         </CardActions>
       </Card>
     </Box>

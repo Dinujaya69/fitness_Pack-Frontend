@@ -15,7 +15,7 @@ export default function Register() {
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [plans, setPlans] = useState([]);
-  const [selectedPlan, setSelectedPlan] = useState("");
+  
   const [image, setImage] = useState(null);
   const [age, setAge] = useState("");
   const navigate = useNavigate();
@@ -34,9 +34,6 @@ export default function Register() {
     fetchPlans();
   }, []);
 
-  const handlePlanSelect = (e) => {
-    setSelectedPlan(e.target.value);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,8 +50,8 @@ export default function Register() {
       phone === "" ||
       !/^\d{10}$/.test(phone) ||
       address === "" ||
-      age === "" ||
-      !selectedPlan
+      age === "" 
+    
     ) {
       toast.error("Please fill in all required fields correctly");
       return;
@@ -68,7 +65,6 @@ export default function Register() {
     formData.append("confirmPassword", confirmPassword);
     formData.append("phone", phone);
     formData.append("age", age);
-    formData.append("selectedPlan", selectedPlan);
     formData.append("address", address);
     if (image) {
       formData.append("image", image);
@@ -114,7 +110,6 @@ export default function Register() {
     setPassword("");
     setConfirmPassword("");
     setPhone("");
-    setSelectedPlan("");
     setAddress("");
  setImage(null);
     setAge("");
@@ -271,28 +266,7 @@ export default function Register() {
                 required
               />
             </div>
-            <div className="mb-4">
-              <label
-                className="block text-fuchsia-50 text-sm font-bold mb-2"
-                htmlFor="plan"
-              >
-                Select Plan:
-              </label>
-              <select
-                className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="plan"
-                value={selectedPlan}
-                onChange={handlePlanSelect}
-                required
-              >
-                <option value="">Select a Plan</option>
-                {plans.map((plan) => (
-                  <option key={plan._id} value={plan._id}>
-                    {plan.title}
-                  </option>
-                ))}
-              </select>
-            </div>
+        
 
              <div>
               <label

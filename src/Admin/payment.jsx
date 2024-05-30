@@ -7,7 +7,7 @@ const AdminPaymentPage = () => {
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const response = await axios.get("/api/payment/allpayments");
+        const response = await axios.get("/api/payment/payment/details");
         setPayments(response.data.payments);
       } catch (error) {
         console.error("Error fetching payments:", error);
@@ -28,7 +28,7 @@ const AdminPaymentPage = () => {
             <th>Currency</th>
             <th>Status</th>
             <th>Payment Method</th>
-            <th>Customer ID</th>
+            <th>Customer Name</th>
             <th>Plan ID</th>
             <th>Created At</th>
           </tr>
@@ -41,7 +41,7 @@ const AdminPaymentPage = () => {
               <td>{payment.currency}</td>
               <td>{payment.status}</td>
               <td>{payment.paymentMethod}</td>
-              <td>{payment.customerId}</td>
+              <td>{payment.customerName}</td>
               <td>{payment.planId}</td>
               <td>{new Date(payment.createdAt).toLocaleString()}</td>
             </tr>

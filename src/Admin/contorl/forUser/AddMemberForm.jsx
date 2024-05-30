@@ -134,7 +134,7 @@ const AddMemberForm = () => {
         <DialogTitle>Register New Member</DialogTitle>
         <DialogContent>
           <form onSubmit={handleSubmit}>
-            <div className="bg-black shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
               <h1 className="text-2xl font-bold mb-4">Registration Form</h1>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="mb-4">

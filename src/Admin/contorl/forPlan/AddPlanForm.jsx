@@ -12,7 +12,7 @@ const AddPlanForm = ({ onAddPlan }) => {
     title: "",
     price: "",
     description: "",
-    planImage: null, // Changed initial value to null
+  //  planImage: null, // Changed initial value to null
   });
 
   const togglePopup = () => {
@@ -33,7 +33,7 @@ const AddPlanForm = ({ onAddPlan }) => {
       formDataToSend.append("title", formData.title);
       formDataToSend.append("price", formData.price);
       formDataToSend.append("description", formData.description);
-      formDataToSend.append("planImage", formData.planImage); // Append the file
+   //   formDataToSend.append("planImage", formData.planImage); // Append the file
 
       const response = await axios.post(
         "http://localhost:5000/api/plan/add",
@@ -51,7 +51,7 @@ const AddPlanForm = ({ onAddPlan }) => {
         title: "",
         price: "",
         description: "",
-        planImage: null, // Reset plan image to null
+      //  planImage: null, // Reset plan image to null
       });
       setIsOpen(false);
     } catch (error) {
@@ -106,7 +106,7 @@ const AddPlanForm = ({ onAddPlan }) => {
                 className="mt-1 p-2 w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
             </div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 Plan Image:
               </label>
@@ -118,7 +118,7 @@ const AddPlanForm = ({ onAddPlan }) => {
                 required
                 className="mt-1 p-2 w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
-            </div>
+            </div> */}
             <DialogActions>
               <Button onClick={togglePopup} color="primary">
                 Cancel

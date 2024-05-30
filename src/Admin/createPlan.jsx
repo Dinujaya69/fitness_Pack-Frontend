@@ -1,155 +1,78 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
+import { Box, Typography, Button, TextField } from "@mui/material";
 import axios from "axios";
-import Header from "./contorl/forPlan/PlanHeader";
-import PlanTable from "./contorl/forPlan/PlanTable";
-import PlanPaginationComponent from "./contorl/forPlan/PlanPagination";
-import AddPlanForm from "./contorl/forPlan/AddPlanForm";
-import EditPlanDialog from "./contorl/forPlan/EditPlanDialog";
-import DeletePlanDialog from "./contorl/forPlan/DeletePlanDialog";
+import { AuthContext } from "../context/AuthContext";
 
 const PlanMain = () => {
-  const [plans, setPlans] = useState([]);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [idToDelete, setIdToDelete] = useState(null);
-  const [openEditModal, setOpenEditModal] = useState(false);
-  const [editPlanData, setEditPlanData] = useState({
-    id: "",
+  const { user } = useContext(AuthContext);
+  const [newPlan, setNewPlan] = useState({
     title: "",
     price: "",
-    planImage: "",
     description: [],
   });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [plansPerPage] = useState(8);
+  const [image, setImage] = useState(null);
 
-  useEffect(() => {
-    fetchPlans();
-  }, []);
-
-  const fetchPlans = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/api/plan/plans");
-      setPlans(response.data);
-    } catch (error) {
-      console.error("Error fetching plans:", error);
-    }
-  };
-
-  const onAddPlan = () => {
-    fetchPlans();
-  };
-
-  const onDeletePlan = (id) => {
-    setOpenDeleteDialog(true);
-    setIdToDelete(id);
-  };
-
-  const onEditPlan = (plan) => {
-    setEditPlanData({
-      id: plan._id,
-      title: plan.title,
-      price: plan.price,
-      planImage: plan.planImage,
-      description: plan.description,
-    });
-    setOpenEditModal(true);
-  };
-
-  const handleCloseEditModal = () => {
-    setOpenEditModal(false);
-    setEditPlanData({
-      id: "",
-      title: "",
-      price: "",
-      planImage: "",
-      description: [],
-    });
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditPlanData((prevPlanData) => ({
-      ...prevPlanData,
-      [name]: value,
-    }));
-  };
-
-  const handleSaveEditModal = async () => {
-    try {
-      await axios.put(
-        `http://localhost:5000/api/plan/update/${editPlanData.id}`,
-        editPlanData
-      );
-      setPlans((prevPlans) =>
-        prevPlans.map((plan) =>
-          plan._id === editPlanData.id ? editPlanData : plan
-        )
-      );
-      handleCloseEditModal();
-    } catch (error) {
-      console.error("Error updating plan:", error);
-      console.error("Request Data:", editPlanData);
-    }
-  };
-
-  const handleCloseDeleteDialog = () => {
-    setOpenDeleteDialog(false);
-    setIdToDelete(null);
-  };
-
-  const handleDeleteConfirmation = async () => {
-    if (!idToDelete) {
-      console.error("No ID set for deleting plan");
-      return;
-    }
+  const handleAddPlan = async () => {
+    const formData = new FormData();
+    formData.append("title", newPlan.title);
+    formData.append("price", newPlan.price);
+    formData.append("description", JSON.stringify(newPlan.description));
+    formData.append("image", image);
 
     try {
-      await axios.delete(`http://localhost:5000/api/plan/delete/${idToDelete}`);
-      setPlans((prevPlans) =>
-        prevPlans.filter((plan) => plan._id !== idToDelete)
-      );
-      handleCloseDeleteDialog();
+      const response = await axios.post("/api/plan/add", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log(response.data);
+      // Reset the form
+      setNewPlan({ title: "", price: "", description: [] });
+      setImage(null);
     } catch (error) {
-      console.error("Error deleting plan:", error);
+      console.error("Error adding plan:", error);
     }
   };
 
-  const indexOfLastPlan = currentPage * plansPerPage;
-  const indexOfFirstPlan = indexOfLastPlan - plansPerPage;
-  const currentPlans = plans.slice(indexOfFirstPlan, indexOfLastPlan);
-
-  const paginate = (event, value) => setCurrentPage(value);
+  if (!user || user.role !== "admin") {
+    return <div>Access Denied</div>;
+  }
 
   return (
-    <div>
-      <Header />
-      <div className="max-w-screen-2xl mx-auto bg-white shadow-md rounded-lg overflow-hidden p-4">
-        <AddPlanForm onAddPlan={onAddPlan} />
-        <PlanTable
-          plans={currentPlans}
-          onEditPlan={onEditPlan}
-          onDeletePlan={onDeletePlan}
-        />
-        <PlanPaginationComponent
-          currentPage={currentPage}
-          totalPlans={plans.length}
-          plansPerPage={plansPerPage}
-          paginate={paginate}
-        />
-      </div>
-      <DeletePlanDialog
-        open={openDeleteDialog}
-        onClose={handleCloseDeleteDialog}
-        onConfirm={handleDeleteConfirmation}
+    <Box className="my-8">
+      <Typography variant="h5" className="mb-4">
+        Add New Plan
+      </Typography>
+      <TextField
+        label="Title"
+        value={newPlan.title}
+        onChange={(e) => setNewPlan({ ...newPlan, title: e.target.value })}
+        fullWidth
+        margin="normal"
       />
-      <EditPlanDialog
-        open={openEditModal}
-        plan={editPlanData}
-        onClose={handleCloseEditModal}
-        onSave={handleSaveEditModal}
-        onChange={handleInputChange}
+      <TextField
+        label="Price"
+        value={newPlan.price}
+        onChange={(e) => setNewPlan({ ...newPlan, price: e.target.value })}
+        fullWidth
+        margin="normal"
       />
-    </div>
+      <TextField
+        label="Description"
+        value={newPlan.description.join(", ")}
+        onChange={(e) =>
+          setNewPlan({ ...newPlan, description: e.target.value.split(",") })
+        }
+        fullWidth
+        margin="normal"
+      />
+      <input
+        type="file"
+        onChange={(e) => setImage(e.target.files[0])}
+        style={{ margin: "20px 0" }}
+      />
+      <Button variant="contained" color="primary" onClick={handleAddPlan}>
+        Add Plan
+      </Button>
+    </Box>
   );
 };
 
