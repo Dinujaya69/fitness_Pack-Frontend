@@ -100,7 +100,7 @@ const ASideBar = () => {
               {
                 text: "Trainers",
                 icon: <FitnessCenterIcon sx={{ color: "white" }} />,
-                link: "/admin/createTrainers",
+                link: "/admin/createTrainners",
               },
               {
                 text: "Plans",

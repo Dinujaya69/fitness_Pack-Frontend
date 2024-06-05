@@ -1,218 +1,157 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { Dialog } from "@mui/material";
+import { AuthContext } from "../context/AuthContext";
+
+import { FaEdit, FaSave } from "react-icons/fa";
 
 const UserProfile = () => {
-  const [userData, setUserData] = useState(null);
-  const [planDetails, setPlanDetails] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
-  const [showPreview, setShowPreview] = useState(false);
-  const [editMode, setEditMode] = useState(false);
-  const [editedUserData, setEditedUserData] = useState({});
-  const [selectedFile, setSelectedFile] = useState(null);
+  const { user, loading, error, dispatch } = useContext(AuthContext);
+  const [formData, setFormData] = useState({});
+  const [lastPayment, setLastPayment] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/auth/me");
-        setUserData(response.data.user);
-        const planId = response.data.user.selectedPlan;
-        const planResponse = await axios.get(
-          `http://localhost:5000/api/plan/planid/${planId}`
-        );
-        setPlanDetails(planResponse.data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
+    if (user) {
+      setFormData({
+        name: user.name,
+        address: user.address,
+        phone: user.phone,
+        age: user.age,
+        gender: user.gender,
+      });
+    }
+  }, [user]);
 
-    fetchUserData();
-  }, []);
-
-  const handleImageClick = () => {
-    setImagePreview(userData.image);
-    setShowPreview(true);
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleEditUserData = () => {
-    setEditMode(true);
-    setEditedUserData(userData);
+  const handleEditClick = () => {
+    setIsEditing(true);
   };
 
-  const handleSaveUserData = async () => {
+  const handleSaveClick = async () => {
     try {
-      const formData = new FormData();
-      for (const key in editedUserData) {
-        formData.append(key, editedUserData[key]);
-      }
-
-      if (selectedFile) {
-        formData.append("image", selectedFile);
-      }
-
-      const response = await axios.put(
-        `http://localhost:5000/api/user/${userData._id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      setUserData(response.data.user);
-      setEditMode(false);
+      await axios.put(`/api/users/update/${user._id}`, formData);
+      setIsEditing(false);
     } catch (error) {
       console.error("Error saving user data:", error);
     }
   };
 
-  const handleInputChange = (e) => {
-    setEditedUserData({
-      ...editedUserData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  useEffect(() => {
+    const fetchLastPayment = async () => {
+      try {
+        const response = await axios.get("/api/payment/myplan/lastpayment");
+        setLastPayment(response.data);
+      } catch (error) {
+        console.error("Error fetching last payment:", error);
+      }
+    };
 
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
+    fetchLastPayment();
+  }, []);
 
-  if (!userData || !planDetails) {
-    return (
-      <div className="text-white flex justify-center items-center h-screen bg-gray-200">
-        Loading...
-      </div>
-    );
-  }
+  if (loading) return 
+  if (error) return <div>{error}</div>;
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="flex flex-col md:flex-row gap-8 text-black p-8">
-        <div className="md:w-1/2 bg-white bg-opacity-70 rounded-lg p-8">
-          <h2 className="text-2xl font-bold mb-4">User Profile</h2>
-          <div className="mb-4">
-            <div className="mb-2">
-              <label className="font-semibold">Name:</label>{" "}
-              {editMode ? (
-                <input
-                  type="text"
-                  name="name"
-                  value={editedUserData.name}
-                  onChange={handleInputChange}
-                  className="border-b-2 border-gray-400 focus:outline-none"
-                />
-              ) : (
-                <span>{userData.name}</span>
-              )}
-            </div>
-            <div className="mb-2">
-              <label className="font-semibold">Age:</label>{" "}
-              {editMode ? (
-                <input
-                  type="number"
-                  name="age"
-                  value={editedUserData.age}
-                  onChange={handleInputChange}
-                  className="border-b-2 border-gray-400 focus:outline-none"
-                />
-              ) : (
-                <span>{userData.age}</span>
-              )}
-            </div>
-            <div className="mb-2">
-              <label className="font-semibold">Gender:</label>{" "}
-              {editMode ? (
-                <input
-                  type="text"
-                  name="gender"
-                  value={editedUserData.gender}
-                  onChange={handleInputChange}
-                  className="border-b-2 border-gray-400 focus:outline-none"
-                />
-              ) : (
-                <span>{userData.gender}</span>
-              )}
-            </div>
-            <div className="mb-2">
-              <label className="font-semibold">Email:</label>{" "}
-              {editMode ? (
-                <input
-                  type="email"
-                  name="email"
-                  value={editedUserData.email}
-                  onChange={handleInputChange}
-                  className="border-b-2 border-gray-400 focus:outline-none"
-                />
-              ) : (
-                <span>{userData.email}</span>
-              )}
-            </div>
-            <div className="mb-2">
-              <label className="font-semibold">Phone:</label>{" "}
-              {editMode ? (
-                <input
-                  type="tel"
-                  name="phone"
-                  value={editedUserData.phone}
-                  onChange={handleInputChange}
-                  className="border-b-2 border-gray-400 focus:outline-none"
-                />
-              ) : (
-                <span>{userData.phone}</span>
-              )}
-            </div>
-            <div className="mb-2">
-              <label className="font-semibold">Address:</label>{" "}
-              {editMode ? (
-                <input
-                  type="text"
-                  name="address"
-                  value={editedUserData.address}
-                  onChange={handleInputChange}
-                  className="border-b-2 border-gray-400 focus:outline-none"
-                />
-              ) : (
-                <span>{userData.address}</span>
-              )}
-            </div>
-            <div>
-              <label className="font-semibold">Selected Plan:</label>{" "}
-              <span>{planDetails.title}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="md:w-1/2">
-          <h2 className="text-2xl text-red-600 justify-center font-bold mb-4">
-            Profile Picture
-          </h2>
-          <img
-            src={`http://localhost:5000${userData.image}`}
-            alt="Profile Pic"
-            className="w-40 h-40 rounded-full shadow-lg cursor-pointer transform transition-transform hover:scale-105"
-            onClick={handleImageClick}
-          />
-          {editMode && (
-            <input type="file" onChange={handleFileChange} className="mt-4" />
-          )}
-          <button
-            className={`bg-${editMode ? "green" : "yellow"}-500 hover:bg-${
-              editMode ? "green" : "yellow"
-            }-700 text-white font-bold py-2 px-4 rounded focus:outline-none mt-8 self-center`}
-            onClick={editMode ? handleSaveUserData : handleEditUserData}
-          >
-            {editMode ? "Save" : "Edit User Data"}
-          </button>
-        </div>
-      </div>
-
-      <Dialog open={showPreview} onClose={() => setShowPreview(false)}>
+    <div className="flex items-center justify-center min-h-screen bg-transparent">
+      <div className="max-w-md w-full bg-slate-600 shadow-md rounded-lg overflow-hidden p-6 space-y-4 animate-pulse">
         <img
-          src={`http://localhost:5000${imagePreview}`}
-          alt="Profile Preview"
+          src={`http://localhost:5000/${user.image}`}
+          alt="Profile"
+          className="w-32 h-32 rounded-full mx-auto mb-4 shadow-lg"
         />
-      </Dialog>
+        <h2 className="text-2xl font-semibold text-center mb-2 text-white">
+          {user.name}
+        </h2>
+        <p className="text-white text-center mb-4">{user.email}</p>
+
+        <form className="space-y-4 w-full">
+          {/* Form fields for user details */}
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Name"
+            className="input-field text-black block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={!isEditing}
+          />
+          <input
+            type="text"
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            placeholder="Address"
+            className="input-field text-black block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={!isEditing}
+          />
+          <input
+            type="text"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="Phone"
+            className="input-field text-black block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={!isEditing}
+          />
+          <input
+            type="text"
+            name="age"
+            value={formData.age}
+            onChange={handleChange}
+            placeholder="Age"
+            className="input-field text-black block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={!isEditing}
+          />
+          <input
+            type="text"
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            placeholder="Gender"
+            className="input-field text-black block w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={!isEditing}
+          />
+        </form>
+
+        <div className="flex justify-center mt-4">
+          {isEditing ? (
+            <button
+              onClick={handleSaveClick}
+              className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md focus:outline-none"
+            >
+              <FaSave className="mr-2" />
+              Save
+            </button>
+          ) : (
+            <button
+              onClick={handleEditClick}
+              className="flex items-center px-4 py-2 bg-green-500 text-white rounded-md focus:outline-none"
+            >
+              <FaEdit className="mr-2" />
+              Edit
+            </button>
+          )}
+        </div>
+
+        {/* Display last payment details */}
+        {lastPayment && (
+          <div className="text-white">
+            <p className="text-2xl font-semibold text-center mb-2 text-white">
+              Last Payment Details:
+            </p>
+            <p className="text-white text-center mb-4">
+              Amount: {lastPayment.amount}
+            </p>
+            <p className="text-white text-center mb-4">
+              Status: {lastPayment.status}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

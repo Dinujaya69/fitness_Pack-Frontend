@@ -11,28 +11,15 @@ const UserProfile = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [usersPerPage] = useState(5); 
+  const [usersPerPage] = useState(5);
 
   useEffect(() => {
     const fetchUsersData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/user/users"
+          "http://localhost:5000/api/payment/users-with-plans"
         );
-        const users = response.data;
-        const members = users.filter((user) => user.role === "member");
-        const usersWithPlans = await Promise.all(
-          members.map(async (user) => {
-            const planId = user.selectedPlan;
-
-            const planResponse = await axios.get(
-              `http://localhost:5000/api/plan/planid/${planId}`
-            );
-            const planDetails = planResponse.data;
-            return { ...user, planDetails };
-          })
-        );
-        setUsersData(usersWithPlans);
+        setUsersData(response.data);
       } catch (error) {
         console.error("Error fetching users data:", error);
       }
@@ -42,7 +29,6 @@ const UserProfile = () => {
   }, []);
 
   const onDeleteUser = (id) => {
-    console.log(id);
     setOpenDeleteDialog(true);
     setIdToDelete(id);
   };
@@ -58,7 +44,7 @@ const UserProfile = () => {
         .delete(`http://localhost:5000/api/user/${idToDelete}`)
         .then(() => {
           setUsersData((prevUsers) =>
-            prevUsers.filter((user) => user.id !== idToDelete)
+            prevUsers.filter((user) => user._id !== idToDelete)
           );
           handleCloseDeleteDialog();
         })
@@ -78,7 +64,7 @@ const UserProfile = () => {
   return (
     <div>
       <Header />
-      <div className="max-w-screen-2xl mx-auto bg-white shadow-md rounded-lg overflow-hidden p-4">
+      <div>
         <AddMemberForm />
         <UserTable users={currentUsers} onDeleteUser={onDeleteUser} />
         <PaginationComponent

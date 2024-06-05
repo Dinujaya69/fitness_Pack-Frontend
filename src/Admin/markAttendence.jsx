@@ -22,20 +22,25 @@ const AttendanceManagement = () => {
   const [attendanceToDelete, setAttendanceToDelete] = useState(null);
 
   useEffect(() => {
-    // Fetch users with role 'member'
     const fetchUsers = async () => {
       try {
         const response = await axios.get("/api/user/users", {
           params: {
-            role: "member",
+            role: "member", // Ensure the API endpoint filters by role
           },
         });
-        setUsers(response.data);
+        // Check if response contains the 'data' property and if it is an array
+        if (response.data && Array.isArray(response.data.data)) {
+          setUsers(response.data.data);
+        } else {
+          console.error("Unexpected data format:", response.data);
+        }
       } catch (error) {
         console.error("Error fetching users:", error);
+        setUsers([]);
       }
     };
-    // Fetch all attendances
+
     const fetchAttendances = async () => {
       try {
         const response = await axios.get("/api/attendance/");
@@ -57,19 +62,16 @@ const AttendanceManagement = () => {
   };
 
   const handleAttendanceSubmit = async () => {
-    if (!selectedUserId) {
-      toast.error("Please select a user");
-      return;
-    }
-
-    // Check if attendance has already been marked for the current day
+    // Check if the selected user has already marked attendance for the current day
     const today = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
     const hasMarkedAttendanceToday = attendances.some(
-      (attendance) => attendance.date.split("T")[0] === today
+      (attendance) =>
+        attendance.userId === selectedUserId &&
+        attendance.date.split("T")[0] === today
     );
 
     if (hasMarkedAttendanceToday) {
-      toast.warn("You have already marked attendance for today");
+      toast.error("You have already marked attendance for today");
       return;
     }
 
@@ -122,12 +124,12 @@ const AttendanceManagement = () => {
             <select
               value={selectedUserId}
               onChange={handleUserChange}
-              className="rounded-md border-gray-400 border p-2 mb-2 overflow-y-auto"
+              className="rounded-md border-gray-400 text-black border p-2 mb-2 overflow-y-auto"
               style={{ maxHeight: "10rem" }}
             >
               <option value="">Select User</option>
-              {users.slice(0, 5).map((user) => (
-                <option key={user._id} value={user._id}>
+              {users.map((user) => (
+                <option key={user._id} value={user._id} className="text-black">
                   {user.name}
                 </option>
               ))}

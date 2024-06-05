@@ -4,12 +4,9 @@ import { Outlet } from "react-router";
 import Footer from "../Footer/AdminFooter";
 import Header from "../Header/Header";
 
-
-
-const MemberLayout = () => {
+const TrainerLayout = () => {
   return (
     <div>
-      
       <Header />
       <Outlet />
       <Footer />
@@ -17,4 +14,4 @@ const MemberLayout = () => {
   );
 };
 
-export default MemberLayout;
+export default TrainerLayout;

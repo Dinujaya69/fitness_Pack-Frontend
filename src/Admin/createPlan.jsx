@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-import { Box, Typography, Button, TextField } from "@mui/material";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 
@@ -37,42 +36,43 @@ const PlanMain = () => {
   }
 
   return (
-    <Box className="my-8">
-      <Typography variant="h5" className="mb-4">
-        Add New Plan
-      </Typography>
-      <TextField
-        label="Title"
+    <div className="max-w-md mx-auto bg-gray-900 shadow-lg rounded-lg p-6 mt-10">
+      <h1 className="text-2xl font-bold mb-4 text-red-500">Add New Plan</h1>
+      <input
+        className="w-full p-2 mb-4 border border-red-500 bg-gray-800 text-white rounded"
+        type="text"
+        placeholder="Title"
         value={newPlan.title}
         onChange={(e) => setNewPlan({ ...newPlan, title: e.target.value })}
-        fullWidth
-        margin="normal"
       />
-      <TextField
-        label="Price"
+      <input
+        className="w-full p-2 mb-4 border border-red-500 bg-gray-800 text-white rounded"
+        type="text"
+        placeholder="Price"
         value={newPlan.price}
         onChange={(e) => setNewPlan({ ...newPlan, price: e.target.value })}
-        fullWidth
-        margin="normal"
       />
-      <TextField
-        label="Description"
+      <input
+        className="w-full p-2 mb-4 border border-red-500 bg-gray-800 text-white rounded"
+        type="text"
+        placeholder="Description (comma-separated)"
         value={newPlan.description.join(", ")}
         onChange={(e) =>
           setNewPlan({ ...newPlan, description: e.target.value.split(",") })
         }
-        fullWidth
-        margin="normal"
       />
       <input
+        className="w-full p-2 mb-4 border border-red-500 bg-gray-800 text-white rounded"
         type="file"
         onChange={(e) => setImage(e.target.files[0])}
-        style={{ margin: "20px 0" }}
       />
-      <Button variant="contained" color="primary" onClick={handleAddPlan}>
+      <button
+        className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-700 transition duration-300"
+        onClick={handleAddPlan}
+      >
         Add Plan
-      </Button>
-    </Box>
+      </button>
+    </div>
   );
 };
 

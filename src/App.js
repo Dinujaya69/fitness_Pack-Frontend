@@ -1,5 +1,7 @@
 //import Layout from "./components/layouts/Layout";
-import "./index.css";
+import './index.css';
+import './custom.css';  // Add this line
+
 import Routers from "./router/Routers";
 
 import axios from "axios";

@@ -4,9 +4,11 @@ import { Outlet } from "react-router";
 import Footer from "../Footer/AdminFooter";
 import Header from "../Header/Header";
 
+
 const Layout = () => {
   return (
     <div>
+
       <Header />
       <Outlet />
       <Footer />

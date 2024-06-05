@@ -5,7 +5,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 const PlanTable = ({ plans, onEditPlan, onDeletePlan }) => (
   <div className="overflow-x-auto">
-    <table className="w-full table-auto">
+    <table className="w-90 text-left text-sm text-black border border-red-600">
       <thead className="bg-gray-50">
         <tr>
           <th
@@ -63,7 +63,11 @@ const PlanTable = ({ plans, onEditPlan, onDeletePlan }) => (
               {plan.price}
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              <img  src={`http://localhost:5000/${plan.planImage}`} alt={plan.title} className="h-16" />
+              <img
+                src={`http://localhost:5000/${plan.planImage}`}
+                alt={plan.title}
+                className="h-16"
+              />
             </td>
             <td className="px-6 py-4 whitespace-wrap text-sm text-gray-500">
               {Array.isArray(plan.description) ? (

@@ -18,6 +18,8 @@ import Repots from "../Admin/attendanceList";
 import CreatePlan from "../Admin/createPlan";
 import CreateTrainners from "../Admin/createTrainners";
 
+
+
 import MemberLayout from "../components/layouts/MemberLayout";
 import Login from "../pages/login";
 import MyPlan from "../Member/myPlan";
@@ -28,6 +30,10 @@ import Cart from "../pages/cart";
 import AttendanceForm from "../Admin/markAttendence";
 import UserList from "../Admin/userList";
 import AttendanceList from "../Admin/attendanceList";
+import TrainerLayout from "../components/layouts/TrainerLayout";
+import TDashboard from "../Trainer/tdashboard";
+
+;
 
 
 const Routers = () => {
@@ -58,11 +64,25 @@ const Routers = () => {
       </Route>
 
       <Route path="/member" element={<MemberLayout />}>
-        <Route path="/member" element={<Navigate to="/member/mdashboard" />} />
+        <Route
+          path="/member"
+          element={<Navigate to="/member/UpdateProfile" />}
+        />
         <Route path="/member/mdashboard" element={<MDashboard />} />
         <Route path="/member/myplan" element={<MyPlan />} />
         <Route path="/member/updateProfile" element={<UpdateProfile />} />
         <Route path="/member/healthStatus" element={<HealthStatus />} />
+      </Route>
+
+      <Route path="/trainer" element={<TrainerLayout />}>
+        <Route
+          path="/trainer"
+          element={<Navigate to="/trainer/UpdateProfile" />}
+        />
+        <Route path="/trainer/dashboard" element={< TDashboard/>} />
+        <Route path="/trainer/myplan" element={<MyPlan />} />
+        <Route path="/trainer/updateProfile" element={<UpdateProfile />} />
+        <Route path="/trainer/healthStatus" element={<HealthStatus />} />
       </Route>
     </Routes>
   );

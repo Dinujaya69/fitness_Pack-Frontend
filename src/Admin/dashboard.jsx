@@ -1,139 +1,126 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Box, Grid, Card, CardContent, Typography } from '@mui/material';
-import { Bar, Doughnut } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-} from 'chart.js';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-);
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import PeopleIcon from "@mui/icons-material/People";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import PaymentsIcon from "@mui/icons-material/Payments";
+import CountUp from "react-countup";
+import AdminPaymentPage from "./payment";
 
 const Dashboard = () => {
-  const [data, setData] = useState({
-    budget: 0,
-    totalMembers: 0,
-    totalTrainers: 0,
-    totalPlans: 0,
-    sales: [],
-    trafficSource: []
-  });
+  const [memberCount, setMemberCount] = useState(0);
+  const [planCount, setPlanCount] = useState(0);
+  const [totalPayments, setTotalPayments] = useState(0);
+  const [trainerCount, setTrainerCount] = useState(0);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchMemberCount = async () => {
       try {
-        const budgetResponse = await axios.get('http://localhost:5000/api/budget');
-        const membersResponse = await axios.get('http://localhost:5000/auth/users');
-        const trainersResponse = await axios.get('http://localhost:5000/api/trainers');
-        const plansResponse = await axios.get('http://localhost:5000/api/plans');
-        const salesResponse = await axios.get('http://localhost:5000/api/sales');
-        const trafficResponse = await axios.get('http://localhost:5000/api/traffic');
-
-        setData({
-          budget: budgetResponse.data,
-          totalMembers: membersResponse.data.length,
-          totalTrainers: trainersResponse.data.length,
-          totalPlans: plansResponse.data.length,
-          sales: salesResponse.data,
-          trafficSource: trafficResponse.data
-        });
+        const response = await axios.get("/api/user/member-count");
+        setMemberCount(response.data.count);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching member count", error);
       }
     };
 
-    fetchData();
+    const fetchPlanCount = async () => {
+      try {
+        const response = await axios.get("/api/user/plan-count");
+        setPlanCount(response.data.count);
+      } catch (error) {
+        console.error("Error fetching plan count", error);
+      }
+    };
+    const fetchTrainerCount = async () => {
+      try {
+        const response = await axios.get("/api/user/trainer-count");
+        setTrainerCount(response.data.count);
+      } catch (error) {
+        console.error("Error fetching plan count", error);
+      }
+    };
+    
+
+    const fetchTotalPayments = async () => {
+      try {
+        const response = await axios.get("/api/user/total-payments");
+        setTotalPayments(response.data.totalAmount);
+      } catch (error) {
+        console.error("Error fetching total payments", error);
+      }
+    };
+    fetchTrainerCount();
+    fetchMemberCount();
+    fetchPlanCount();
+    fetchTotalPayments();
   }, []);
 
-  const salesData = {
-    labels: data.sales.map(sale => sale.month),
-    datasets: [
-      {
-        label: 'Sales',
-        data: data.sales.map(sale => sale.amount),
-        backgroundColor: 'rgba(54, 162, 235, 0.5)'
-      }
-    ]
-  };
-
-  const trafficData = {
-    labels: data.trafficSource.map(source => source.label),
-    datasets: [
-      {
-        data: data.trafficSource.map(source => source.value),
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
-      }
-    ]
-  };
-
   return (
-    <Box sx={{ flexGrow: 1, padding: 2 }}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="h5">Budget</Typography>
-              <Typography variant="h4">${data.budget}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="h5">Total Members</Typography>
-              <Typography variant="h4">{data.totalMembers}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="h5">Total Trainers</Typography>
-              <Typography variant="h4">{data.totalTrainers}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="h5">Total Plans</Typography>
-              <Typography variant="h4">{data.totalPlans}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <Card>
-            <CardContent>
-              <Typography variant="h5">Sales</Typography>
-              <Bar data={salesData} />
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h5">Traffic Source</Typography>
-              <Doughnut data={trafficData} />
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-    </Box>
+    <div className="min-h-screen bg-gradient-to-r from-transparent to-gray-900 p-8">
+      <h1 className="text-4xl font-bold text-center text-white mb-8 drop-title">
+        Admin Dashboard
+      </h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="card border-3d p-6 rounded-lg shadow-lg flex flex-col items-center">
+          <PeopleIcon
+            className="icon-drop"
+            style={{ fontSize: 50, color: "white" }}
+          />
+          <h2 className="text-2xl font-semibold text-white mb-4 drop-text">
+            Member Count
+          </h2>
+          <CountUp
+            className="text-4xl text-white drop-text"
+            end={memberCount}
+            duration={2}
+          />
+        </div>
+        <div className="card border-3d p-6 rounded-lg shadow-lg flex flex-col items-center">
+          <PeopleIcon
+            className="icon-drop"
+            style={{ fontSize: 50, color: "white" }}
+          />
+          <h2 className="text-2xl font-semibold text-white mb-4 drop-text">
+            Trainer Count
+          </h2>
+          <CountUp
+            className="text-4xl text-white drop-text"
+            end={trainerCount}
+            duration={2}
+          />
+        </div>
+        <div className="card border-3d p-6 rounded-lg shadow-lg flex flex-col items-center">
+          <AssignmentIcon
+            className="icon-drop"
+            style={{ fontSize: 50, color: "white" }}
+          />
+          <h2 className="text-2xl font-semibold text-white mb-4 drop-text">
+            Plan Count
+          </h2>
+          <CountUp
+            className="text-4xl text-white drop-text"
+            end={planCount}
+            duration={2}
+          />
+        </div>
+        <div className="card border-3d p-6 rounded-lg  shadow-lg flex flex-col items-center">
+          <PaymentsIcon
+            className="icon-drop"
+            style={{ fontSize: 50, color: "white" }}
+          />
+          <h2 className="text-2xl font-semibold text-white mb-4 drop-text">
+            Total Payments
+          </h2>
+          <CountUp
+            className="text-4xl text-white drop-text"
+            end={totalPayments}
+            duration={2}
+          />
+        </div>
+      </div>
+      <AdminPaymentPage />
+    </div>
   );
+
 };
 
 export default Dashboard;

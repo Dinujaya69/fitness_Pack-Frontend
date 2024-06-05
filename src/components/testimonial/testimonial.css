@@ -1,0 +1,57 @@
+
+/* Style for the testimonial container */
+.cardtest {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Style for each testimonial card */
+.testimonial-card {
+  width: 320px;
+  border: 2px solid #ff0000;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+  margin-bottom: 20px;
+}
+
+/* Hover effect for testimonial cards */
+.testimonial-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Style for testimonial card image */
+.testimonial-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+/* Style for testimonial card content */
+.testimonial-card .card-body {
+  padding: 20px;
+}
+
+/* Style for testimonial card title */
+.testimonial-card .card-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Style for testimonial card role */
+.testimonial-card .role {
+  font-size: 16px;
+  color: #ff0000;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Style for testimonial card text */
+.testimonial-card .card-text {
+  font-size: 16px;
+  color: #333;
+}

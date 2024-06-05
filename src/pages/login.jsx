@@ -34,16 +34,19 @@ const Login = () => {
       if (data.success) {
         toast.success(data.message);
 
-        if (data.data.role === "member") {
-          console.log("Navigating to member dashboard...");
-          navigate("/member/mdashboard");
-          console.log("Navigation complete.");
-        } else if (data.data.role === "admin") {
-          console.log("Navigating to admin dashboard...");
-          navigate("/admin/dashboard");
-          console.log("Navigation complete.");
-        }
-
+       if (data.data.role === "member") {
+         console.log("Navigating to member dashboard...");
+         navigate("/member/updateProfile");
+         console.log("Navigation complete.");
+       } else if (data.data.role === "admin") {
+         console.log("Navigating to admin dashboard...");
+         navigate("/admin/dashboard");
+         console.log("Navigation complete.");
+       } else if (data.data.role === "trainer") {
+         console.log("Navigating to trainer dashboard..."); // Add this line
+         navigate("/trainer/dashboard"); // Add this line
+         console.log("Navigation complete."); // Add this line
+       }
         dispatch({ type: "LOGIN_SUCCESS", payload: data.data.user });
         setEmail("");
         setPassword("");
@@ -111,6 +114,7 @@ const Login = () => {
               </Link>
             </p>
           </div>
+          
         </div>
         <div className="md:block hidden w-1/2">
           <img className="rounded-2xl" src={loginImage} alt="Login" />
