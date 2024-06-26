@@ -9,7 +9,7 @@ import { ToastContainer,  Bounce } from 'react-toastify'; // Import Bounce trans
 import 'react-toastify/dist/ReactToastify.css';
 
 
-axios.defaults.baseURL = "https://fitness-pack-backend.vercel.app";
+axios.defaults.baseURL = "http://localhost:5000";
 axios.defaults.withCredentials = true; 
 
 function App() {
