@@ -23,7 +23,7 @@ export default function Register() {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const response = await axios.get("/api/plan/plans");
+        const response = await axios.get("https://fitness-pack-backend.vercel.app/api/plan/plans");
         setPlans(response.data);
       } catch (error) {
         console.error("Error fetching plans:", error);
@@ -76,7 +76,7 @@ export default function Register() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
+        "https://fitness-pack-backend.vercel.app/api/auth/register",
         formData,
         {
           headers: {
